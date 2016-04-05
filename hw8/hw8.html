@@ -409,14 +409,14 @@
                             for(var i = 0; i < news.length; i++){
                                 var str = "";
                                 str += "<div class='well'>"
-                                str += "<a href='" + news[i].Url + "'>" + news[i].Title + "</a>";
+                                str += "<a href='" + news[i].Url + "' target='_blank'>" + news[i].Title + "</a>";
                                 str += "<p>" + news[i].Description + "</p>";
                                 str += "<strong>Publisher: " + news[i].Source + "</strong>";
                                 str += "<br />"
                                 var timestamp = Date.parse(news[i].Date);
                                 var timestr = new Date(timestamp);
                                 months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-                                var time = "" + timestr.getDate() + " " + months[timestr.getMonth()] + " " + timestr.getFullYear() + timestr.getHours() + ":" +timestr.getMinutes() + ":" + timestr.getSeconds();
+                                var time = "" + timestr.getDate() + " " + months[timestr.getMonth()] + " " + timestr.getFullYear() + " " + timestr.getHours() + ":" +timestr.getMinutes() + ":" + timestr.getSeconds();
                                 str += "<strong>Date: " + time + "</strong>";
                                 str += "</div>";
                                 $("#newsFeeds").append(str);
@@ -648,7 +648,7 @@
                                         
                                         fillTable(response);
                                         getDayChart(response["Symbol"]);
-                                        //getNews(response["Symbol"]);
+                                        getNews(response["Symbol"]);
                                         store = response["Symbol"];
                                         
                                         if(localStorage.getItem(store)){
