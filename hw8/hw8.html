@@ -41,10 +41,9 @@
         </script>
         <script>    
             function favList(){
-
+                PlotChart("AAPL");
                 for(var i = 0; i < localStorage.length; i++){
                     var favkey = localStorage.key(i);
-                    console.log(favkey);
                     $.ajax({
                         url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
                         data: {symbol: favkey},
@@ -55,7 +54,7 @@
                             
                             item = "";
                             item += "<tr>";
-                            item += "<td>" + response["Symbol"] + "</td>";
+                            item += "<td>" + "<a href=\"javascript:getDetails('" + response["Symbol"] + "')\">" + response["Symbol"] + "</a>" + "</td>";
                             item += "<td>" + response["Name"] + "</td>";
                             item += "<td>" + "$ " + response["LastPrice"] + "</td>";
                             
@@ -245,7 +244,7 @@
                 buttonTheme: {
                     width: 20
                 },
-                selected: 1,
+                selected: 0,
                 inputEnabled: false
             },
             
@@ -257,8 +256,6 @@
                 title: {
                     text: 'Stock Value'
                 },
-                height: 200,
-                lineWidth: 2
             }],
             tooltip: {
                 shared: true,
@@ -268,6 +265,9 @@
                     '<td style="text-align: right">${point.y}</td></tr>',
                 
                 valueDecimals: 2
+            },
+            exporting: { 
+                enabled: false 
             },
             series: [{
                 type: 'area',
@@ -296,6 +296,7 @@
                 enabled:false
             }
         });
+
     };
 </script>
         
@@ -364,11 +365,12 @@
             function addFavorite(){
                 if(typeof(Storage) !== "undefined") {
                     favsymbol = $("#symbolintable").text();
+                    console.log(typeof(favsymbol));
                     if(!localStorage.getItem(favsymbol)){
                         $("#favoriteicon").addClass("yellow");
                         var fav = "";
                         fav += "<tr>";
-                        fav += "<td>" + $("#symbolintable").text() + "</td>";
+                        fav += "<td><a href=\"javascript:getDetails('" + favsymbol + "')\">" + $("#symbolintable").text() + "</a></td>";
                         fav += "<td>" + $("#name").text() + "</td>";
                         fav += "<td>" + $("#lastprice").text() + "</td>";
                         if($("#change").text() < 0){
@@ -466,7 +468,36 @@
                 });
             }
             
-            
+            function getDetails(detailsymbol){
+                $.ajax({
+                        url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
+                        data: {symbol: detailsymbol},
+                        dataType: "json",
+                        type: 'GET',
+
+                        success: function(response, status, xhr){
+                            $("#carouselnext").removeAttr('disabled');
+                            $("#myCarousel").carousel(1);
+                            $("#myCarousel").carousel('pause');
+
+                            fillTable(response);
+                            getDayChart(response["Symbol"]);
+                            getNews(response["Symbol"]);
+                            store = response["Symbol"];
+
+                            if(localStorage.getItem(store)){
+                                $("#favoriteicon").addClass("yellow");
+                            }
+                            else{
+                                $("#favoriteicon").removeClass("yellow");
+                            }
+                            PlotChart(response["Symbol"]);
+                        },
+                        error: function (xhr, textStatus, errorThrown) { 
+                            alert("error in quote");
+                        }
+                    });
+            }
             
             function emptyTable(){
                 $("#name").empty();
@@ -481,6 +512,7 @@
                 $("#low").empty();
                 $("#openprice").empty();
             }
+            
             function fillTable(response){
                 emptyTable();
                 $("#name").append(response["Name"]);
@@ -616,58 +648,36 @@
                 
                 
                 $("#getquote").click(function(){
-                    event.preventDefault();
-                    var symbol = $('#symbol').val();
-                    if(symbol != ""){
-                        $.ajax({
-                          url: "http://www-scf.usc.edu/~zonghanc/index.php/?",
-                          dataType: "json",
-                          type: 'GET',
-                          data: {
-                            input: symbol
-                          },
-                          success: function(response, status, xhr) {
-                            if(response.length <= 0){
-                                if(!$('#invalid').text()){
-                                    $('#invalid').append("Select a valid entry");
-                                }
-                                
-                            }
-                            else{
-//http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?
-                                $.ajax({
-                                    url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
-                                    data: {symbol: $('#symbol').val()},
-                                    dataType: "json",
-                                    type: 'GET',
-
-                                    success: function(response, status, xhr){
-                                        $("#carouselnext").removeAttr('disabled');
-                                        $("#myCarousel").carousel(1);
-                                        $("#myCarousel").carousel('pause');
-                                        
-                                        fillTable(response);
-                                        getDayChart(response["Symbol"]);
-                                        getNews(response["Symbol"]);
-                                        store = response["Symbol"];
-                                        
-                                        if(localStorage.getItem(store)){
-                                            $("#favoriteicon").addClass("yellow");
-                                        }
-                                        else{
-                                            $("#favoriteicon").removeClass("yellow");
-                                        }
-                                        PlotChart(response["Symbol"]);
-                                    },
-                                    error: function (xhr, textStatus, errorThrown) { 
-                                        alert("error in quote");
+                    var isValidForm = document.getElementsByTagName('form')[0];
+                    if (isValidForm.checkValidity())
+                    {
+                        event.preventDefault();
+                        var symbol = $('#symbol').val();
+                        if(symbol != ""){
+                            $.ajax({
+                              url: "http://www-scf.usc.edu/~zonghanc/index.php/?",
+                              dataType: "json",
+                              type: 'GET',
+                              data: {
+                                input: symbol
+                              },
+                              success: function(response, status, xhr) {
+                                if(response.length <= 0){
+                                    if(!$('#invalid').text()){
+                                        $('#invalid').append("Select a valid entry");
                                     }
-                                });
-                            }
 
-                          }
-                        });
+                                }
+                                else{
+    //http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?
+                                    getDetails($('#symbol').val());
+                                }
+
+                              }
+                            });
+                        }
                     }
+                    
                     
                 });
                 
@@ -702,8 +712,8 @@
                         <p class="red" id="invalid"></p>
                     </div>
                     <div class="col-md-3">
-                        <button id="getquote" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Get Quote</button>
-                        <button id="clear" type="button" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span>Clear</button>
+                        <button type="submit" id="getquote" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>Get Quote</button>
+                        <button type="reset" id="clear" type="button" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span>Clear</button>
                     </div>
                     </form>
                 </div>
@@ -882,7 +892,7 @@
                                      </div>
                                    </div>
                                    <div class="tab-pane fade" id="hisCharts">
-                                      <div id="highchart" style="height: 400px; min-width: 1200px"></div>
+                                      <div id="highchart" style="height: 400px; width:85%;"></div>
                                        
                                        
                                    </div>
