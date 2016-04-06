@@ -41,11 +41,11 @@
         </script>
         <script>    
             function favList(){
-                PlotChart("AAPL");
+                
                 for(var i = 0; i < localStorage.length; i++){
                     var favkey = localStorage.key(i);
                     $.ajax({
-                        url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
+                        url: 'http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?',
                         data: {symbol: favkey},
                         dataType: "json",
                         type: 'GET',
@@ -91,6 +91,7 @@
             }
         </script>
         <style>
+            .highcharts-container{width:100% !important; height:100% !important;}
             .pos{
                 display: inline-block;
             }
@@ -162,11 +163,10 @@
                 {
                     Symbol: symbol,
                     Type: "price",
-                    Params: ["ohlc"] //ohlc, c = close only
+                    Params: ["ohlc"] 
                 },
             ]
-            //,LabelPeriod: 'Week',
-            //LabelInterval: 1
+
         }
     };
 
@@ -292,11 +292,8 @@
                     ]
                 }
             },],
-            credits: {
-                enabled:false
-            }
-        });
 
+        });
     };
 </script>
         
@@ -328,7 +325,7 @@
             
             function refreshOne(symbolref){
                 $.ajax({
-                        url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
+                        url: 'http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?',
                         data: {symbol: symbolref},
                         dataType: "json",
                         type: 'GET',
@@ -470,7 +467,7 @@
             
             function getDetails(detailsymbol){
                 $.ajax({
-                        url: 'http://www-scf.usc.edu/~zonghanc/index.php/?',
+                        url: 'http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?',
                         data: {symbol: detailsymbol},
                         dataType: "json",
                         type: 'GET',
@@ -492,6 +489,7 @@
                                 $("#favoriteicon").removeClass("yellow");
                             }
                             PlotChart(response["Symbol"]);
+                            
                         },
                         error: function (xhr, textStatus, errorThrown) { 
                             alert("error in quote");
@@ -592,7 +590,7 @@
                 $("#symbol").autocomplete({
                   source: function( request, response ) {
                         $.ajax({
-                          url: "http://www-scf.usc.edu/~zonghanc/index.php/?",
+                          url: "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?",
                           dataType: "json",
                           type: 'GET',
                           data: {
@@ -655,7 +653,7 @@
                         var symbol = $('#symbol').val();
                         if(symbol != ""){
                             $.ajax({
-                              url: "http://www-scf.usc.edu/~zonghanc/index.php/?",
+                              url: "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?",
                               dataType: "json",
                               type: 'GET',
                               data: {
@@ -669,7 +667,7 @@
 
                                 }
                                 else{
-    //http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?
+
                                     getDetails($('#symbol').val());
                                 }
 
@@ -749,12 +747,12 @@
                                             Automatic Refresh:
                                           </label>
 
-                                          <span data-toggle="tooltip" title="autorefresh"><input id="autorefresh" type="checkbox" data-toggle="toggle" data-size="small"></span>
-                                          <button class="btn btn-default" data-toggle="tooltip" title="refresh" onclick="refresh()">
+                                          <span data-toggle="tooltip" title="Autorefresh"><input id="autorefresh" type="checkbox" data-toggle="toggle" data-size="small"></span>
+                                          <button class="btn btn-default" data-toggle="tooltip" title="Refresh" onclick="refresh()">
                                                 <span class="glyphicon glyphicon-refresh"></span>
                                           </button>
 
-                                          <button class="btn btn-default" href="#myCarousel" role="button" data-toggle="tooltip" title="stock details" id="carouselnext">
+                                          <button class="btn btn-default" href="#myCarousel" disabled role="button" data-toggle="tooltip" title="Stock Details" id="carouselnext">
                                                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" ></span>
                                                 <span class="sr-only">Next</span>
                                           </button>
@@ -892,7 +890,7 @@
                                      </div>
                                    </div>
                                    <div class="tab-pane fade" id="hisCharts">
-                                      <div id="highchart" style="height: 400px; width:85%;"></div>
+                                      <div id="highchart" style="height:400px;"></div>
                                        
                                        
                                    </div>
@@ -909,10 +907,7 @@
 
                     </div>
               </div>
-                
-              
-
-              
+                     
               
         </div>
         </div>
