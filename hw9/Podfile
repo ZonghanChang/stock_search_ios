@@ -1,0 +1,19 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '8.0'
+# Uncomment this line if you're using Swift
+use_frameworks!
+
+target 'hw9' do
+    pod 'Alamofire-Synchronous', :git => 'https://github.com/Dalodd/Alamofire-Synchronous.git'
+    pod 'SwiftyJSON'
+    pod 'CCAutocomplete'
+end
+
+target 'hw9Tests' do
+
+end
+
+target 'hw9UITests' do
+
+end
+

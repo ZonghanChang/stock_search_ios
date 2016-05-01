@@ -1,0 +1,28 @@
+PODS:
+  - Alamofire (3.3.1)
+  - Alamofire-Synchronous (0.0.3):
+    - Alamofire (~> 3.0)
+  - CCAutocomplete (0.0.4)
+  - SwiftyJSON (2.3.2)
+
+DEPENDENCIES:
+  - Alamofire-Synchronous (from `https://github.com/Dalodd/Alamofire-Synchronous.git`)
+  - CCAutocomplete
+  - SwiftyJSON
+
+EXTERNAL SOURCES:
+  Alamofire-Synchronous:
+    :git: https://github.com/Dalodd/Alamofire-Synchronous.git
+
+CHECKOUT OPTIONS:
+  Alamofire-Synchronous:
+    :commit: 2923e89eca488033efcd693166cb7f7bd24c0622
+    :git: https://github.com/Dalodd/Alamofire-Synchronous.git
+
+SPEC CHECKSUMS:
+  Alamofire: 369bc67b6f5ac33ded3648d7bd21c5bfb91c2ecc
+  Alamofire-Synchronous: 686df4021a37b1e8e4c8601a19714e4f3b0dedb9
+  CCAutocomplete: 7e54cab43d10eb9e5385d5b3409e9dee0b7af714
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+
+COCOAPODS: 0.39.0
