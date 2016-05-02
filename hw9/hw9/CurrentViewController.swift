@@ -28,6 +28,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     
     let fields = ["Name", "Symbol", "Last Price", "Change", "Time and Date", "Market Cap", "Volume", "Change YTD", "High Price", "Low Price", "Opening Price"]
     var content = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(false, animated: false)
@@ -48,9 +49,49 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         
         scroll.contentSize = CGSizeMake(scroll.frame.size.width, 1000)
         
-        
-        // Do any additional setup after loading the view.
+        loadData()
+        setStar(symbol)
     }
+    
+    func setStar(symbol: String) {
+        
+        if indexOfSymbol(symbol) != -1 {
+            if let image = UIImage(named: "star_solid"){
+                favoriteIcon.setImage(image, forState: .Normal)
+            }
+        }
+        else {
+            if let image = UIImage(named: "star_outline"){
+                favoriteIcon.setImage(image, forState: .Normal)
+            }
+        }
+    }
+    
+    func indexOfSymbol(symbol: String) -> Int{
+        for i in 0..<favoriteList.count{
+            let company = favoriteList[i].valueForKey("symbol") as? String
+            if let company = company {
+                if symbol == company {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+    
+    func loadData() {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName:"Symbol")
+        do {
+            let results =
+                try managedContext.executeFetchRequest(fetchRequest)
+            favoriteList = results as! [NSManagedObject]
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
+    }
+
     
     override func viewWillAppear(animated: Bool) {
         fillTable()
@@ -177,10 +218,31 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     }
     
     @IBAction func favorite(sender: AnyObject) {
-        addFavorite(symbol)
+        let index = indexOfSymbol(symbol)
+        if index == -1 {
+            addFavorite(symbol)
+        }
+        else {
+            deleteFavorite(index)
+        }
+    }
+    
+    func deleteFavorite(index: Int) {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext: NSManagedObjectContext = appDelegate.managedObjectContext
+        managedContext.deleteObject(favoriteList[index] as NSManagedObject)
+        favoriteList.removeAtIndex(index)
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError  {
+            print("Could not delete \(error), \(error.userInfo)")
+        }
+        setStar(symbol)
     }
     
     func addFavorite(symbol: String){
+        
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         
@@ -195,6 +257,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         } catch let error as NSError  {
             print("Could not save \(error), \(error.userInfo)")
         }
+        setStar(symbol)
     }
     
     

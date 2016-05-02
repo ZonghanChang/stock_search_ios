@@ -34,12 +34,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
+        loadData()
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         loadData()
-        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        favoriteTable.reloadData()
     }
     
     func loadData() {
@@ -190,8 +195,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.Delete) {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            appDelegate.managedObjectContext.deleteObject(favoriteList[indexPath.row])
+            let managedContext: NSManagedObjectContext = appDelegate.managedObjectContext
+            managedContext.deleteObject(favoriteList[indexPath.row] as NSManagedObject)
             favoriteList.removeAtIndex(indexPath.row)
+            
+            do {
+                try managedContext.save()
+            } catch let error as NSError  {
+                print("Could not delete \(error), \(error.userInfo)")
+            }
             favoriteTable.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
