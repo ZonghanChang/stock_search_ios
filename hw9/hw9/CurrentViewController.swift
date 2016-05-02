@@ -17,6 +17,9 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         
     @IBOutlet weak var scroll: UIScrollView!
     
+    @IBOutlet weak var imageView: UIImageView!
+    
+    @IBOutlet weak var favoriteIcon: UIButton!
     
 
     
@@ -25,7 +28,6 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(false, animated: false)
-        
         
         let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol]).responseJSON()
         if let jsonObj = response.result.value {
@@ -41,15 +43,15 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
         self.navigationItem.leftBarButtonItem = newBackButton
         
-        //scroll.contentSize = CGSizeMake(scroll.frame.size.width, table.frame.size.height + image.frame.size.height + 100)
+        scroll.contentSize = CGSizeMake(scroll.frame.size.width, 1000)
         
         
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(animated: Bool) {
-
         fillTable()
+        setChart()
     }
 
     override func didReceiveMemoryWarning() {
@@ -81,6 +83,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         cell.content.font = UIFont.systemFontOfSize(12)
         if indexPath.row == 3 {
             if json!["ChangePercent"].doubleValue < 0{
+                
                 cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Down.png")
             }
             else{
@@ -88,12 +91,12 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
             }
         }
         if indexPath.row == 7 {
-            if json!["ChangeYTD"].doubleValue < 0{
+            if (Double(json!["LastPrice"].stringValue)! - json!["ChangeYTD"].doubleValue) < 0{
                 cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Down.png")
             }
             else{
                 cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Up.png")
-            }
+            } 
         }
         return cell
     }
@@ -142,8 +145,38 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     
     
     func setChart(){
-        var image: UIImage?
+        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=AAPL&lang=en-US&width=550&height=300") {
+            imageView.contentMode = .ScaleAspectFit
+            downloadImage(checkedUrl)
+        }
     }
+    
+    
+    func getDataFromUrl(url:NSURL, completion: ((data: NSData?, response: NSURLResponse?, error: NSError? ) -> Void)) {
+        NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, error) in
+            completion(data: data, response: response, error: error)
+            }.resume()
+    }
+    
+    func downloadImage(url: NSURL){
+        getDataFromUrl(url) { (data, response, error)  in
+            dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                guard let data = data where error == nil else { return }
+                
+                self.imageView.image = UIImage(data: data)
+            }
+        }
+    }
+
+    
+    @IBAction func shareFB(sender: AnyObject) {
+        
+    }
+    
+    @IBAction func favorite(sender: AnyObject) {
+        
+    }
+    
     
     
     func back(sender: UIBarButtonItem) {
