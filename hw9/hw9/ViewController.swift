@@ -14,12 +14,17 @@ import Alamofire_Synchronous
 import CoreData
 
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
     @IBOutlet weak var inputField: UITextField!
     
     var autoCompleteViewController: AutoCompleteViewController!
     var isFirstLoad: Bool = true
+    var favoriteList = [NSManagedObject]()
+    
+    @IBOutlet weak var favoriteTable: UITableView!
+    
+    @IBOutlet weak var autoRefreshSwitch: UISwitch!
     
     @IBOutlet weak var navigation: UINavigationItem!
     
@@ -31,27 +36,18 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         
-        let currentSearchTerm = "AAPL"
-        let keyword = "'\(currentSearchTerm)'".stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!
-        let url = NSURL(string: "https://api.datamarket.azure.com/Bing/Search/v1/News?Query=%27\(keyword)%27&$format=json")!
-        
-        let credentials = ":M5fYJivsRO3DSFIHKs2bKa4GZZjXkir4AYRTTQGYPi4"
-        let plainText = credentials.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-        let base64 = plainText!.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
-        let headers = [
-            "Authorization": "Basic \(base64)"
-        ]
-        Alamofire.request(.GET, url, headers: headers)
-            .responseJSON { response in
-                if let jsonObj = response.result.value {
-                    let json = JSON(jsonObj)["d"]["results"]
-                    for (_,value) : (String, JSON) in json{
-                        
-                    }
-                }
-
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName:"Symbol")
+        do {
+            let results =
+                try managedContext.executeFetchRequest(fetchRequest)
+            favoriteList = results as! [NSManagedObject]
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
         }
- 
+        
+        
     }
 
     override func viewDidLayoutSubviews() {
@@ -117,7 +113,74 @@ class ViewController: UIViewController {
             current.symbol = symbol
         }
     }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("favorites", forIndexPath: indexPath) as! FavoriteCell
+        let symbol = favoriteList[indexPath.row].valueForKey("symbol") as? String
+        
+        let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol!]).responseJSON()
+        if let jsonObj = response.result.value {
+            let json = JSON(jsonObj)
+            cell.symbol.text = json["Symbol"].stringValue
+            cell.name.text = json["Name"].stringValue
+            cell.price.text = "$ \(json["LastPrice"].stringValue)"
+            
+            var cap: String = ""
+            let marketcap = json["MarketCap"].doubleValue
+            if marketcap / 1000000000 >= 0.005 {
+                cap = (String(format: "%.2f", marketcap / 1000000000) + " Billion")
+            }
+            else if marketcap / 1000000 >= 0.05{
+                cap = (String(format: "%.2f", marketcap / 1000000) + " Million")
+            }
+            else{
+                cap = (String(marketcap))
+            }
+            cell.cap.text = "Market Cap: \(cap)"
+            
+            cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
+            cell.change.textColor = UIColor.whiteColor()
+            if json["Change"].doubleValue < 0 {
+                cell.change.backgroundColor = UIColor.redColor()
+            }
+            else {
+                cell.change.backgroundColor = UIColor.greenColor()
+            }
+            
+        }
+        
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return favoriteList.count
+    }
 
+    @IBAction func refresh(sender: AnyObject) {
+        favoriteTable.reloadData()
+    }
+    
+    @IBAction func autoRefreshChange(sender: AnyObject) {
+        var autoRefreshTimer: NSTimer? = nil
+        if autoRefreshSwitch.on {
+             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("refreshOnce"), userInfo: nil, repeats: true)
+        }
+        else{
+            if let test = autoRefreshTimer {
+                print("test")
+                test.invalidate()
+            }
+            
+        }
+    }
+    
+    func refreshOnce() {
+        print("tik")
+        favoriteTable.reloadData()
+    }
+
+    
 }
 
 extension ViewController: AutocompleteDelegate {

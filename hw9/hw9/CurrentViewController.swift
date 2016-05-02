@@ -87,18 +87,18 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         if indexPath.row == 3 {
             if json!["ChangePercent"].doubleValue < 0{
                 
-                cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Down.png")
+                cell.arrow.image = UIImage(named: "Down")
             }
             else{
-                cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Up.png")
+                cell.arrow.image = UIImage(named: "Up")
             }
         }
         if indexPath.row == 7 {
             if (Double(json!["LastPrice"].stringValue)! - json!["ChangeYTD"].doubleValue) < 0{
-                cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Down.png")
+                cell.arrow.image = UIImage(named: "Down")
             }
             else{
-                cell.arrow.image = UIImage(contentsOfFile: "/Users/zonghanchang/Documents/doc/course/csci571/hw9/hw9/Up.png")
+                cell.arrow.image = UIImage(named: "Up")
             } 
         }
         return cell
@@ -177,7 +177,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     }
     
     @IBAction func favorite(sender: AnyObject) {
-        
+        addFavorite(symbol)
     }
     
     func addFavorite(symbol: String){
@@ -189,11 +189,12 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         let favorite = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext)
         favorite.setValue(symbol, forKey: "symbol")
         
-        var error: NSError?
-        //if !managedContext.save(&error) {
-        //    print("Could not save")
-        //}
-        favoriteList.append(favorite)
+        do {
+            try managedContext.save()
+            favoriteList.append(favorite)
+        } catch let error as NSError  {
+            print("Could not save \(error), \(error.userInfo)")
+        }
     }
     
     
