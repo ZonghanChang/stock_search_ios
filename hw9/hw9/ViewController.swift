@@ -28,14 +28,21 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBOutlet weak var navigation: UINavigationItem!
     
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    
+    var autoRefreshTimer = NSTimer()
+    
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        loadData()
         
-        
+    }
+    
+    func loadData() {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName:"Symbol")
@@ -46,8 +53,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
         }
-        
-        
     }
 
     override func viewDidLayoutSubviews() {
@@ -102,7 +107,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if validate() {
             let input = inputField.text!
             symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
-            
 
         }
     }
@@ -158,28 +162,40 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     @IBAction func refresh(sender: AnyObject) {
-        favoriteTable.reloadData()
+        refreshOnce()
     }
     
     @IBAction func autoRefreshChange(sender: AnyObject) {
-        var autoRefreshTimer: NSTimer? = nil
+        
         if autoRefreshSwitch.on {
              autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("refreshOnce"), userInfo: nil, repeats: true)
         }
         else{
-            if let test = autoRefreshTimer {
-                print("test")
-                test.invalidate()
-            }
+            
+            autoRefreshTimer.invalidate()
             
         }
     }
     
     func refreshOnce() {
-        print("tik")
+        indicator.startAnimating()
         favoriteTable.reloadData()
+        indicator.stopAnimating()
     }
-
+    
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.Delete) {
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            appDelegate.managedObjectContext.deleteObject(favoriteList[indexPath.row])
+            favoriteList.removeAtIndex(indexPath.row)
+            favoriteTable.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }
+    }
+    
     
 }
 
