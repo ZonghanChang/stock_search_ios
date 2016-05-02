@@ -10,9 +10,12 @@ import UIKit
 import SwiftyJSON
 import Alamofire
 import Alamofire_Synchronous
+import CoreData
+
 class CurrentViewController: UIViewController, UITableViewDataSource {
     var json: JSON?
     var symbol: String = ""
+    var favoriteList = [NSManagedObject]()
     @IBOutlet weak var table: UITableView!
         
     @IBOutlet weak var scroll: UIScrollView!
@@ -177,6 +180,21 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         
     }
     
+    func addFavorite(symbol: String){
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let entity = NSEntityDescription.entityForName("Symbol", inManagedObjectContext: managedContext)
+        
+        let favorite = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext)
+        favorite.setValue(symbol, forKey: "symbol")
+        
+        var error: NSError?
+        //if !managedContext.save(&error) {
+        //    print("Could not save")
+        //}
+        favoriteList.append(favorite)
+    }
     
     
     func back(sender: UIBarButtonItem) {

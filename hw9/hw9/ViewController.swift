@@ -11,7 +11,7 @@ import CCAutocomplete
 import Alamofire
 import SwiftyJSON
 import Alamofire_Synchronous
-
+import CoreData
 
 
 class ViewController: UIViewController {
