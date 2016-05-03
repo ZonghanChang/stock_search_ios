@@ -51,7 +51,6 @@ class NewsViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         self.dates.append(value["Date"].stringValue)
                         self.urls.append(value["Url"].stringValue)
                     }
-                    print("in ala \(self.titles)")
                 }
                 self.table.reloadData()
         }

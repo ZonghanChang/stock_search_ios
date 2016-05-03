@@ -277,15 +277,15 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         dialog.delegate = self
         dialog.mode = FBSDKShareDialogMode.FeedBrowser
         dialog.show()
+
     }
     
     func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
-        print("com")
         let alertController = UIAlertController(title: "Sharing Completed", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
-        self.presentViewController(self, animated: true, completion: nil)
+        
     }
     
     func sharer(sharer: FBSDKSharing!, didFailWithError error: NSError!) {
@@ -294,7 +294,6 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
-
     }
     
     func sharerDidCancel(sharer: FBSDKSharing!) {
@@ -304,14 +303,4 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         
         self.presentViewController(alertController, animated: true, completion: nil)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

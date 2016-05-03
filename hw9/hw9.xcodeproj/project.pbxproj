@@ -57,6 +57,7 @@
 		FC207AFB1CD8C045004F75E4 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		FC207AFC1CD8C045004F75E4 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		FC207AFD1CD8C045004F75E4 /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKShareKit.framework; sourceTree = "<group>"; };
+		FC207B011CD9375C004F75E4 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		FC3CBFE91CD492DC00E7027A /* DetailCellTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailCellTableViewCell.swift; sourceTree = "<group>"; };
 		FC3CBFEF1CD5EC1000E7027A /* historical.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = historical.html; sourceTree = "<group>"; };
 		FC6E6FB31CCB576600CD5618 /* hw9.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hw9.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +161,7 @@
 				FC6E6FC51CCB576600CD5618 /* Info.plist */,
 				FC6E6FBD1CCB576600CD5618 /* hw9.xcdatamodeld */,
 				FC0DCAC21CCEE690009744DB /* CurrentViewController.swift */,
+				FC207B011CD9375C004F75E4 /* BridgingHeader.h */,
 				FC3CBFE91CD492DC00E7027A /* DetailCellTableViewCell.swift */,
 				FC0DCAC41CCEEFD2009744DB /* HistoricalViewController.swift */,
 				FC0DCAC61CCEF018009744DB /* NewsViewController.swift */,
