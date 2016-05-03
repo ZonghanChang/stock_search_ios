@@ -147,12 +147,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             cell.cap.text = "Market Cap: \(cap)"
             
-            cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
+            
             cell.change.textColor = UIColor.whiteColor()
             if json["Change"].doubleValue < 0 {
+                cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
                 cell.change.backgroundColor = UIColor.redColor()
             }
             else {
+                cell.change.text = ("+" + String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
                 cell.change.backgroundColor = UIColor.greenColor()
             }
             
