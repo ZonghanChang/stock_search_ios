@@ -112,12 +112,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if validate() {
             let input = inputField.text!
             symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
-
         }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         let current: CurrentViewController = segue.destinationViewController as! CurrentViewController
+        
         if segue.identifier == "current" {
             current.symbol = symbol
         }
@@ -206,6 +206,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             favoriteTable.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let currentCell = tableView.cellForRowAtIndexPath(indexPath) as! FavoriteCell
+        symbol = currentCell.symbol.text!
+        self.performSegueWithIdentifier("current", sender: self)
+
     }
     
     

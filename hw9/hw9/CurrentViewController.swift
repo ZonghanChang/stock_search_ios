@@ -41,13 +41,14 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         
         if let json = json{
             self.title = json["Symbol"].stringValue
+            symbol = json["Symbol"].stringValue
         }
         
         self.navigationItem.hidesBackButton = true
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
         self.navigationItem.leftBarButtonItem = newBackButton
         
-        scroll.contentSize = CGSizeMake(scroll.frame.size.width, 1000)
+        //scroll.contentSize = CGSizeMake(scroll.frame.size.width, 1000)
         
         loadData()
         setStar(symbol)

@@ -387,7 +387,7 @@
                                 </connections>
                             </button>
                             <webView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ict-1T-hL6">
-                                <rect key="frame" x="0.0" y="171" width="375" height="377"/>
+                                <rect key="frame" x="0.0" y="171" width="375" height="414"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                                 <connections>
                                     <outlet property="delegate" destination="aIA-yw-jLc" id="q6f-7I-HL1"/>
@@ -579,8 +579,8 @@
         <image name="star_outline" width="38" height="38"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="7dR-O0-6ur"/>
-        <segue reference="F0Y-NW-xOs"/>
+        <segue reference="f5n-mA-X0U"/>
         <segue reference="vrb-Gg-G4i"/>
+        <segue reference="0mi-Ie-voI"/>
     </inferredMetricsTieBreakers>
 </document>
