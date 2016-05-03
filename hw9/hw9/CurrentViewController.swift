@@ -11,8 +11,11 @@ import SwiftyJSON
 import Alamofire
 import Alamofire_Synchronous
 import CoreData
+import FBSDKCoreKit
+import FBSDKLoginKit
+import FBSDKShareKit
 
-class CurrentViewController: UIViewController, UITableViewDataSource {
+class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKSharingDelegate {
     var json: JSON?
     var symbol: String = ""
     var favoriteList = [NSManagedObject]()
@@ -190,7 +193,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
     
     
     func setChart(){
-        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=AAPL&lang=en-US&width=550&height=300") {
+        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300") {
             imageView.contentMode = .ScaleAspectFit
             downloadImage(checkedUrl)
         }
@@ -213,10 +216,6 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         }
     }
 
-    
-    @IBAction func shareFB(sender: AnyObject) {
-        
-    }
     
     @IBAction func favorite(sender: AnyObject) {
         let index = indexOfSymbol(symbol)
@@ -266,6 +265,43 @@ class CurrentViewController: UIViewController, UITableViewDataSource {
         self.navigationController?.popToRootViewControllerAnimated(true)
     }
 
+    
+    @IBAction func facebook(sender: AnyObject) {
+        let content : FBSDKShareLinkContent = FBSDKShareLinkContent()
+        content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
+        content.contentTitle = "Current Stock Price of \(json!["Name"].stringValue) is $\(json!["LastPrice"].stringValue)"
+        content.contentDescription = "Stock Information of \(json!["Name"].stringValue) (\(json!["Symbol"].stringValue))"
+        content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
+        
+        let dialog:FBSDKShareDialog = FBSDKShareDialog()
+        dialog.shareContent = content
+        dialog.fromViewController = self
+        dialog.mode = FBSDKShareDialogMode.FeedBrowser
+        dialog.show()
+    }
+    
+    func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
+        let alertController = UIAlertController(title: "Sharing Completed", message:"", preferredStyle: UIAlertControllerStyle.Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+
+    }
+    
+    func sharer(sharer: FBSDKSharing!, didFailWithError error: NSError!) {
+        let alertController = UIAlertController(title: "Sharing Fail", message:"", preferredStyle: UIAlertControllerStyle.Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+
+    }
+    
+    func sharerDidCancel(sharer: FBSDKSharing!) {
+        let alertController = UIAlertController(title: "Sharing Cancelled", message:"", preferredStyle: UIAlertControllerStyle.Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
     /*
     // MARK: - Navigation
 

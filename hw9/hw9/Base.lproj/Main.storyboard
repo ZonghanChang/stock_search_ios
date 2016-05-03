@@ -236,7 +236,7 @@
                                                 </constraints>
                                                 <state key="normal" title="Button" image="facebook_icon"/>
                                                 <connections>
-                                                    <action selector="shareFB:" destination="gM0-Uw-JJ6" eventType="touchUpInside" id="Nj2-S9-lcM"/>
+                                                    <action selector="facebook:" destination="gM0-Uw-JJ6" eventType="touchUpInside" id="zeE-xX-EcX"/>
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stock Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5by-di-0l5">
@@ -266,7 +266,7 @@
                                                         <rect key="frame" x="0.0" y="28" width="375" height="35"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iVi-Et-w8Z" id="xMF-r6-Jdj">
-                                                            <rect key="frame" x="0.0" y="0.0" width="375" height="35"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="375" height="34.5"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gTS-Ec-YBY">
