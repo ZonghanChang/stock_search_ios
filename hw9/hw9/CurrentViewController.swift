@@ -51,8 +51,6 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
         self.navigationItem.leftBarButtonItem = newBackButton
         
-        //scroll.contentSize = CGSizeMake(scroll.frame.size.width, 1000)
-        
         loadData()
         setStar(symbol)
     }
@@ -268,7 +266,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     
     @IBAction func facebook(sender: AnyObject) {
         let content : FBSDKShareLinkContent = FBSDKShareLinkContent()
-        content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
+        //content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
         content.contentTitle = "Current Stock Price of \(json!["Name"].stringValue) is $\(json!["LastPrice"].stringValue)"
         content.contentDescription = "Stock Information of \(json!["Name"].stringValue) (\(json!["Symbol"].stringValue))"
         content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
@@ -276,19 +274,22 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         let dialog:FBSDKShareDialog = FBSDKShareDialog()
         dialog.shareContent = content
         dialog.fromViewController = self
+        dialog.delegate = self
         dialog.mode = FBSDKShareDialogMode.FeedBrowser
         dialog.show()
     }
     
     func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
+        print("com")
         let alertController = UIAlertController(title: "Sharing Completed", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
-
+        self.presentViewController(self, animated: true, completion: nil)
     }
     
     func sharer(sharer: FBSDKSharing!, didFailWithError error: NSError!) {
+        
         let alertController = UIAlertController(title: "Sharing Fail", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
@@ -297,6 +298,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     func sharerDidCancel(sharer: FBSDKSharing!) {
+        print("cancel")
         let alertController = UIAlertController(title: "Sharing Cancelled", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
