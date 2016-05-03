@@ -19,7 +19,7 @@ class HistoricalViewController: UIViewController,UIWebViewDelegate {
         self.navigationItem.hidesBackButton = true
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
         self.navigationItem.leftBarButtonItem = newBackButton
-        
+        self.title = symbol
         let localfilePath = NSBundle.mainBundle().URLForResource("historical", withExtension: "html");
         let myRequest = NSURLRequest(URL: localfilePath!);
         
