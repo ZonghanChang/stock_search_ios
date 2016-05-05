@@ -10,7 +10,7 @@ import UIKit
 import CCAutocomplete
 import Alamofire
 import SwiftyJSON
-import Alamofire_Synchronous
+//import Alamofire_Synchronous
 import CoreData
 
 
@@ -149,6 +149,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
             
             cell.change.textColor = UIColor.whiteColor()
+           
             if json["Change"].doubleValue < 0 {
                 cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
                 cell.change.backgroundColor = UIColor.redColor()

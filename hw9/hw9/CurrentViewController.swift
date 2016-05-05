@@ -297,10 +297,11 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     func sharerDidCancel(sharer: FBSDKSharing!) {
-        print("cancel")
         let alertController = UIAlertController(title: "Sharing Cancelled", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
     }
+    
+    
 }
