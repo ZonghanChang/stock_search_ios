@@ -36,7 +36,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         
-        let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol]).responseJSON()
+        let response = Alamofire.request(.GET, "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?", parameters: ["symbol": symbol]).responseJSON()
         if let jsonObj = response.result.value {
             json = JSON(jsonObj)
         }

@@ -115,7 +115,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBAction func getQuote(sender: UIButton) {
         if validate() {
             let input = inputField.text!
-            symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
+            if input.characters.count > 2 {
+                symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
+            }
+            else {
+                symbol = input
+            }
         }
     }
     
@@ -192,12 +197,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func refreshOnce() {
         indicator.startAnimating()
-        let delay = 0.001 * Double(NSEC_PER_SEC)
+        let delay = 2 * Double(NSEC_PER_SEC)
         let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-        //dispatch_after(time, dispatch_get_main_queue()){
+        dispatch_after(time, dispatch_get_main_queue()){
             self.favoriteTable.reloadData()
             self.indicator.stopAnimating()
-        //}
+        }
         
     }
     
