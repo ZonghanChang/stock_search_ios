@@ -191,7 +191,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     
     
     func setChart(){
-        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300") {
+        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=400&height=300") {
             imageView.contentMode = .ScaleAspectFit
             downloadImage(checkedUrl)
         }
@@ -266,18 +266,20 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     
     @IBAction func facebook(sender: AnyObject) {
         let content : FBSDKShareLinkContent = FBSDKShareLinkContent()
-        content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
+        content.contentURL = NSURL(string: "http://finance.yahoo.com/q?s=" + self.symbol)
         content.contentTitle = "Current Stock Price of \(json!["Name"].stringValue) is $\(json!["LastPrice"].stringValue)"
         content.contentDescription = "Stock Information of \(json!["Name"].stringValue) (\(json!["Symbol"].stringValue))"
-        //content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
+        content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
         
+        FBSDKShareDialog.showFromViewController(self, withContent: content, delegate: self)
+        /*
         let dialog:FBSDKShareDialog = FBSDKShareDialog()
         dialog.shareContent = content
         dialog.fromViewController = self
         dialog.delegate = self
         dialog.mode = FBSDKShareDialogMode.FeedBrowser
         dialog.show()
-
+        */
     }
     
     func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
