@@ -283,7 +283,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
-        let alertController = UIAlertController(title: "Sharing Completed", message:"", preferredStyle: UIAlertControllerStyle.Alert)
+        let alertController = UIAlertController(title: "Posted Successfully", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
@@ -299,7 +299,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     func sharerDidCancel(sharer: FBSDKSharing!) {
-        let alertController = UIAlertController(title: "Sharing Cancelled", message:"", preferredStyle: UIAlertControllerStyle.Alert)
+        let alertController = UIAlertController(title: "Not Posted", message:"", preferredStyle: UIAlertControllerStyle.Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
         
         self.presentViewController(alertController, animated: true, completion: nil)
