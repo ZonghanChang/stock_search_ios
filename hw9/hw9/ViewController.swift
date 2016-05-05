@@ -10,7 +10,6 @@ import UIKit
 import CCAutocomplete
 import Alamofire
 import SwiftyJSON
-//import Alamofire_Synchronous
 import CoreData
 
 
@@ -127,38 +126,40 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let cell = tableView.dequeueReusableCellWithIdentifier("favorites", forIndexPath: indexPath) as! FavoriteCell
         let symbol = favoriteList[indexPath.row].valueForKey("symbol") as? String
         
-        let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol!]).responseJSON()
-        if let jsonObj = response.result.value {
-            let json = JSON(jsonObj)
-            cell.symbol.text = json["Symbol"].stringValue
-            cell.name.text = json["Name"].stringValue
-            cell.price.text = "$ \(json["LastPrice"].stringValue)"
-            
-            var cap: String = ""
-            let marketcap = json["MarketCap"].doubleValue
-            if marketcap / 1000000000 >= 0.005 {
-                cap = (String(format: "%.2f", marketcap / 1000000000) + " Billion")
+        Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol!]).responseJSON(){ response in
+            if let jsonObj = response.result.value {
+                let json = JSON(jsonObj)
+                cell.symbol.text = json["Symbol"].stringValue
+                cell.name.text = json["Name"].stringValue
+                cell.price.text = "$ \(json["LastPrice"].stringValue)"
+                
+                var cap: String = ""
+                let marketcap = json["MarketCap"].doubleValue
+                if marketcap / 1000000000 >= 0.005 {
+                    cap = (String(format: "%.2f", marketcap / 1000000000) + " Billion")
+                }
+                else if marketcap / 1000000 >= 0.05{
+                    cap = (String(format: "%.2f", marketcap / 1000000) + " Million")
+                }
+                else{
+                    cap = (String(marketcap))
+                }
+                cell.cap.text = "Market Cap: \(cap)"
+                
+                
+                cell.change.textColor = UIColor.whiteColor()
+                
+                if json["Change"].doubleValue < 0 {
+                    cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
+                    cell.change.backgroundColor = UIColor.redColor()
+                }
+                else {
+                    cell.change.text = ("+" + String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
+                    cell.change.backgroundColor = UIColor.greenColor()
+                }
+                
             }
-            else if marketcap / 1000000 >= 0.05{
-                cap = (String(format: "%.2f", marketcap / 1000000) + " Million")
-            }
-            else{
-                cap = (String(marketcap))
-            }
-            cell.cap.text = "Market Cap: \(cap)"
-            
-            
-            cell.change.textColor = UIColor.whiteColor()
-           
-            if json["Change"].doubleValue < 0 {
-                cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
-                cell.change.backgroundColor = UIColor.redColor()
-            }
-            else {
-                cell.change.text = ("+" + String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
-                cell.change.backgroundColor = UIColor.greenColor()
-            }
-            
+
         }
         
         
@@ -171,6 +172,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBAction func refresh(sender: AnyObject) {
         refreshOnce()
+        
     }
     
     @IBAction func autoRefreshChange(sender: AnyObject) {
@@ -189,6 +191,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         indicator.startAnimating()
         favoriteTable.reloadData()
         indicator.stopAnimating()
+        
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
