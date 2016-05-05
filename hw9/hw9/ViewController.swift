@@ -85,9 +85,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let input = inputField.text!
         
-        let symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
-        
-        let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["input": symbol]).responseJSON()
+        var symbol: String = String()
+        if let _ = input.rangeOfString("-"){
+            symbol = input.substringToIndex(input.rangeOfString("-")!.startIndex)
+        }
+        else{
+            symbol = input
+        }
+        let response = Alamofire.request(.GET, "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?", parameters: ["input": symbol]).responseJSON()
         if let jsonObj = response.result.value {
             let json = JSON(jsonObj)
             if let _ = json[0]["Symbol"].string {
@@ -126,7 +131,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let cell = tableView.dequeueReusableCellWithIdentifier("favorites", forIndexPath: indexPath) as! FavoriteCell
         let symbol = favoriteList[indexPath.row].valueForKey("symbol") as? String
         
-        Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["symbol": symbol!]).responseJSON(){ response in
+        Alamofire.request(.GET, "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?", parameters: ["symbol": symbol!]).responseJSON(){ response in
             if let jsonObj = response.result.value {
                 let json = JSON(jsonObj)
                 cell.symbol.text = json["Symbol"].stringValue
@@ -178,7 +183,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBAction func autoRefreshChange(sender: AnyObject) {
         
         if autoRefreshSwitch.on {
-             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(ViewController.refreshOnce), userInfo: nil, repeats: true)
+             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10.0, target: self, selector: #selector(ViewController.refreshOnce), userInfo: nil, repeats: true)
         }
         else{
             
@@ -189,8 +194,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func refreshOnce() {
         indicator.startAnimating()
-        favoriteTable.reloadData()
-        indicator.stopAnimating()
+        let delay = 0.001 * Double(NSEC_PER_SEC)
+        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+        //dispatch_after(time, dispatch_get_main_queue()){
+            self.favoriteTable.reloadData()
+            self.indicator.stopAnimating()
+        //}
         
     }
     
