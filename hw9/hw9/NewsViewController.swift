@@ -27,7 +27,7 @@ class NewsViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Do any additional setup after loading the view.
         self.title = symbol
         self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
+        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(NewsViewController.back(_:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
         let currentSearchTerm = symbol

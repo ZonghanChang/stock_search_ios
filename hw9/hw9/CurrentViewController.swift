@@ -48,7 +48,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         }
         
         self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Bordered, target: self, action: "back:")
+        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CurrentViewController.back(_:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
         loadData()
@@ -266,10 +266,10 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     
     @IBAction func facebook(sender: AnyObject) {
         let content : FBSDKShareLinkContent = FBSDKShareLinkContent()
-        //content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
+        content.contentURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
         content.contentTitle = "Current Stock Price of \(json!["Name"].stringValue) is $\(json!["LastPrice"].stringValue)"
         content.contentDescription = "Stock Information of \(json!["Name"].stringValue) (\(json!["Symbol"].stringValue))"
-        content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=550&height=300")
+        //content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
         
         let dialog:FBSDKShareDialog = FBSDKShareDialog()
         dialog.shareContent = content

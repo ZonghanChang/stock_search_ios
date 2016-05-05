@@ -175,7 +175,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBAction func autoRefreshChange(sender: AnyObject) {
         
         if autoRefreshSwitch.on {
-             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("refreshOnce"), userInfo: nil, repeats: true)
+             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(ViewController.refreshOnce), userInfo: nil, repeats: true)
         }
         else{
             
