@@ -13,11 +13,11 @@ public protocol AutocompletableOption {
     var symbol: String { get }
 }
 
-public class AutocompleteCellData: AutocompletableOption {
-    private let _text: String
-    public var text: String { get { return _text } }
-    public let image: UIImage?
-    public let symbol: String
+open class AutocompleteCellData: AutocompletableOption {
+    fileprivate let _text: String
+    open var text: String { get { return _text } }
+    open let image: UIImage?
+    open let symbol: String
 
     public init(text: String, symbol: String, image: UIImage?) {
         self._text = text

@@ -27,16 +27,16 @@ class NewsViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Do any additional setup after loading the view.
         self.title = symbol
         self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(NewsViewController.back(_:)))
+        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(NewsViewController.back(_:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
         let currentSearchTerm = symbol
-        let keyword = "'\(currentSearchTerm)'".stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!
-        let url = NSURL(string: "https://api.datamarket.azure.com/Bing/Search/v1/News?Query=%27\(keyword)%27&$format=json")!
+        let keyword = "'\(currentSearchTerm)'".addingPercentEncoding(withAllowedCharacters: .urlHostAllowed())!
+        let url = URL(string: "https://api.datamarket.azure.com/Bing/Search/v1/News?Query=%27\(keyword)%27&$format=json")!
         
         let credentials = ":M5fYJivsRO3DSFIHKs2bKa4GZZjXkir4AYRTTQGYPi4"
-        let plainText = credentials.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-        let base64 = plainText!.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+        let plainText = credentials.data(using: String.Encoding.utf8, allowLossyConversion: false)
+        let base64 = plainText!.base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
         let headers = [
             "Authorization": "Basic \(base64)"
         ]
@@ -63,42 +63,42 @@ class NewsViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCellWithIdentifier("news", forIndexPath: indexPath) as! NewsCell
-        cell.title.text = self.titles[indexPath.row]
-        cell.title.font = UIFont.boldSystemFontOfSize(15)
-        cell.content.text = self.contents[indexPath.row]
-        cell.publisher.text = self.publishers[indexPath.row]
-        cell.date.text = self.dates[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "news", for: indexPath) as! NewsCell
+        cell.title.text = self.titles[(indexPath as NSIndexPath).row]
+        cell.title.font = UIFont.boldSystemFont(ofSize: 15)
+        cell.content.text = self.contents[(indexPath as NSIndexPath).row]
+        cell.publisher.text = self.publishers[(indexPath as NSIndexPath).row]
+        cell.date.text = self.dates[(indexPath as NSIndexPath).row]
         return cell
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return self.titles.count
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "historical" {
-            let historical: HistoricalViewController = segue.destinationViewController as! HistoricalViewController
+            let historical: HistoricalViewController = segue.destination as! HistoricalViewController
             historical.symbol = symbol
         }
         
         if segue.identifier == "current" {
-            let current: CurrentViewController = segue.destinationViewController as! CurrentViewController
+            let current: CurrentViewController = segue.destination as! CurrentViewController
             current.symbol = symbol
         }
 
     }
     
-    func back(sender: UIBarButtonItem) {
-        self.navigationController?.popToRootViewControllerAnimated(true)
+    func back(_ sender: UIBarButtonItem) {
+        self.navigationController?.popToRootViewController(animated: true)
     }
 
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        UIApplication.sharedApplication().openURL(NSURL(string: urls[indexPath.row])!)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        UIApplication.shared.openURL(URL(string: urls[(indexPath as NSIndexPath).row])!)
     }
     /*
     // MARK: - Navigation

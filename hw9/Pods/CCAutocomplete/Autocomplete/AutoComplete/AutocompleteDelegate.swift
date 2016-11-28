@@ -10,10 +10,10 @@ import UIKit
 
 public protocol AutocompleteDelegate: class {
     func autoCompleteTextField() -> UITextField
-    func autoCompleteThreshold(textField: UITextField) -> Int
-    func autoCompleteItemsForSearchTerm(term: String) -> [AutocompletableOption]
+    func autoCompleteThreshold(_ textField: UITextField) -> Int
+    func autoCompleteItemsForSearchTerm(_ term: String) -> [AutocompletableOption]
     func autoCompleteHeight() -> CGFloat
-    func didSelectItem(item: AutocompletableOption) -> Void
+    func didSelectItem(_ item: AutocompletableOption) -> Void
 
     func nibForAutoCompleteCell() -> UINib
     func heightForCells() -> CGFloat
@@ -22,7 +22,7 @@ public protocol AutocompleteDelegate: class {
 
 public extension AutocompleteDelegate {
     func nibForAutoCompleteCell() -> UINib {
-        return UINib(nibName: "DefaultAutoCompleteCell", bundle: NSBundle(forClass: AutoCompleteViewController.self))
+        return UINib(nibName: "DefaultAutoCompleteCell", bundle: Bundle(for: AutoCompleteViewController.self))
     }
 
     func heightForCells() -> CGFloat {
@@ -32,7 +32,7 @@ public extension AutocompleteDelegate {
     func getCellDataAssigner() -> ((UITableViewCell, AutocompletableOption) -> Void) {
         let assigner: ((UITableViewCell, AutocompletableOption) -> Void) = {
             (cell: UITableViewCell, cellData: AutocompletableOption) -> Void in
-            if let cell = cell as? AutoCompleteCell, cellData = cellData as? AutocompleteCellData {
+            if let cell = cell as? AutoCompleteCell, let cellData = cellData as? AutocompleteCellData {
                 cell.textImage = cellData
             }
         }

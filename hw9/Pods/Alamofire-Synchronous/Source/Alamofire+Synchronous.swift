@@ -9,63 +9,63 @@
 import Foundation
 import Alamofire
 extension Request {
-    public func response() -> (request: NSURLRequest?, response: NSHTTPURLResponse?, data: NSData?, error: NSError?) {
-        let semaphore = dispatch_semaphore_create(0)
-        var result: (request: NSURLRequest?, response: NSHTTPURLResponse?, data: NSData?, error: NSError?)!
-        self.response(queue: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completionHandler: { request, response, data, error in
+    public func response() -> (request: URLRequest?, response: HTTPURLResponse?, data: Data?, error: NSError?) {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: (request: URLRequest?, response: HTTPURLResponse?, data: Data?, error: NSError?)!
+        self.response(queue: DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default), completionHandler: { request, response, data, error in
             result = (
                 request: request,
                 response: response,
                 data: data,
                 error: error
             )
-            dispatch_semaphore_signal(semaphore);
+            semaphore.signal();
         })
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
     
-    public func responseData() -> Response<NSData, NSError> {
-        let semaphore = dispatch_semaphore_create(0)
-        var result: Response<NSData, NSError>!
-        self.responseData(queue: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completionHandler: { response in
+    public func responseData() -> Response<Data, NSError> {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: Response<Data, NSError>!
+        self.responseData(queue: DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default), completionHandler: { response in
             result = response
-            dispatch_semaphore_signal(semaphore);
+            semaphore.signal();
         })
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
     
-    public func responseJSON(options options: NSJSONReadingOptions = .AllowFragments) -> Response<AnyObject, NSError> {
-        let semaphore = dispatch_semaphore_create(0)
+    public func responseJSON(options: JSONSerialization.ReadingOptions = .allowFragments) -> Response<AnyObject, NSError> {
+        let semaphore = DispatchSemaphore(value: 0)
         var result: Response<AnyObject, NSError>!
-        self.responseJSON(queue: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), options: options, completionHandler: {response in
+        self.responseJSON(queue: DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default), options: options, completionHandler: {response in
             result = response
-            dispatch_semaphore_signal(semaphore);
+            semaphore.signal();
         })
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
     
-    public func responseString(encoding encoding: NSStringEncoding? = nil) -> Response<String, NSError> {
-        let semaphore = dispatch_semaphore_create(0)
+    public func responseString(encoding: String.Encoding? = nil) -> Response<String, NSError> {
+        let semaphore = DispatchSemaphore(value: 0)
         var result: Response<String, NSError>!
-        self.responseString(queue: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), encoding: encoding, completionHandler: { response in
+        self.responseString(queue: DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default), encoding: encoding, completionHandler: { response in
             result = response
-            dispatch_semaphore_signal(semaphore);
+            semaphore.signal();
         })
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
     
-    public func responsePropertyList(options options: NSPropertyListReadOptions = NSPropertyListReadOptions()) -> Response<AnyObject, NSError> {
-        let semaphore = dispatch_semaphore_create(0)
+    public func responsePropertyList(options: PropertyListSerialization.ReadOptions = PropertyListSerialization.ReadOptions()) -> Response<AnyObject, NSError> {
+        let semaphore = DispatchSemaphore(value: 0)
         var result: Response<AnyObject, NSError>!
-        self.responsePropertyList(queue: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), options: options, completionHandler: { response in
+        self.responsePropertyList(queue: DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default), options: options, completionHandler: { response in
             result = response
-            dispatch_semaphore_signal(semaphore);
+            semaphore.signal();
         })
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        semaphore.wait(timeout: DispatchTime.distantFuture)
         return result
     }
 }

@@ -29,9 +29,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     
-    var autoRefreshTimer = NSTimer()
+    var autoRefreshTimer = Timer()
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         loadData()
     }
@@ -42,17 +42,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         loadData()
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         favoriteTable.reloadData()
     }
     
     func loadData() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName:"Symbol")
         do {
             let results =
-                try managedContext.executeFetchRequest(fetchRequest)
+                try managedContext.fetch(fetchRequest)
             favoriteList = results as! [NSManagedObject]
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
@@ -76,18 +76,18 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     func validate() -> Bool {
         if (inputField.text == ""){
-            let alertController = UIAlertController(title: "Please Enter a Stock Name or Symbol", message:"", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+            let alertController = UIAlertController(title: "Please Enter a Stock Name or Symbol", message:"", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
             
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.present(alertController, animated: true, completion: nil)
             return false
         }
         
         let input = inputField.text!
         
         var symbol: String = String()
-        if let _ = input.rangeOfString("-"){
-            symbol = input.substringToIndex(input.rangeOfString("-")!.startIndex)
+        if let _ = input.range(of: "-"){
+            symbol = input.substring(to: input.range(of: "-")!.lowerBound)
         }
         else{
             symbol = input
@@ -95,14 +95,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let response = Alamofire.request(.GET, "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?", parameters: ["input": symbol]).responseJSON()
         if let jsonObj = response.result.value {
             let json = JSON(jsonObj)
+                    
             if let _ = json[0]["Symbol"].string {
                 return true
             }
             else{
-                let alertController = UIAlertController(title: "Invalid Symbol", message:"", preferredStyle: UIAlertControllerStyle.Alert)
-                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+                let alertController = UIAlertController(title: "Invalid Symbol", message:"", preferredStyle: UIAlertControllerStyle.alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
                 
-                self.presentViewController(alertController, animated: true, completion: nil)
+                self.present(alertController, animated: true, completion: nil)
                 return false
             }
         }
@@ -112,11 +113,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
 
     var symbol: String = ""
-    @IBAction func getQuote(sender: UIButton) {
+    @IBAction func getQuote(_ sender: UIButton) {
         if validate() {
             let input = inputField.text!
             if input.characters.count > 2 {
-                symbol = (input.substringToIndex(input.rangeOfString("-")!.startIndex))
+                symbol = (input.substring(to: input.range(of: "-")!.lowerBound))
             }
             else {
                 symbol = input
@@ -124,17 +125,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let current: CurrentViewController = segue.destinationViewController as! CurrentViewController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let current: CurrentViewController = segue.destination as! CurrentViewController
         
         if segue.identifier == "current" {
             current.symbol = symbol
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("favorites", forIndexPath: indexPath) as! FavoriteCell
-        let symbol = favoriteList[indexPath.row].valueForKey("symbol") as? String
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "favorites", for: indexPath) as! FavoriteCell
+        let symbol = favoriteList[(indexPath as NSIndexPath).row].value(forKey: "symbol") as? String
         
         Alamofire.request(.GET, "http://zonghanchang571-env.us-west-2.elasticbeanstalk.com/?", parameters: ["symbol": symbol!]).responseJSON(){ response in
             if let jsonObj = response.result.value {
@@ -157,15 +158,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 cell.cap.text = "Market Cap: \(cap)"
                 
                 
-                cell.change.textColor = UIColor.whiteColor()
+                cell.change.textColor = UIColor.white
                 
                 if json["Change"].doubleValue < 0 {
                     cell.change.text = (String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
-                    cell.change.backgroundColor = UIColor.redColor()
+                    cell.change.backgroundColor = UIColor.red
                 }
                 else {
                     cell.change.text = ("+" + String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
-                    cell.change.backgroundColor = UIColor.greenColor()
+                    cell.change.backgroundColor = UIColor.green
                 }
                 
             }
@@ -174,19 +175,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return favoriteList.count
     }
 
-    @IBAction func refresh(sender: AnyObject) {
+    @IBAction func refresh(_ sender: AnyObject) {
         refreshOnce()
         
     }
     
-    @IBAction func autoRefreshChange(sender: AnyObject) {
+    @IBAction func autoRefreshChange(_ sender: AnyObject) {
         
-        if autoRefreshSwitch.on {
-             autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10.0, target: self, selector: #selector(ViewController.refreshOnce), userInfo: nil, repeats: true)
+        if autoRefreshSwitch.isOn {
+             autoRefreshTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(ViewController.refreshOnce), userInfo: nil, repeats: true)
         }
         else{
             
@@ -197,39 +198,40 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func refreshOnce() {
         indicator.startAnimating()
-        let delay = 2 * Double(NSEC_PER_SEC)
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-        dispatch_after(time, dispatch_get_main_queue()){
-            self.favoriteTable.reloadData()
+        self.favoriteTable.reloadData()
+        let delay = 1 * Double(NSEC_PER_SEC)
+        let time = DispatchTime.now() + Double(Int64(delay)) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: time){
+            
             self.indicator.stopAnimating()
         }
         
     }
     
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.Delete) {
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.delete) {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let managedContext: NSManagedObjectContext = appDelegate.managedObjectContext
-            managedContext.deleteObject(favoriteList[indexPath.row] as NSManagedObject)
-            favoriteList.removeAtIndex(indexPath.row)
+            managedContext.delete(favoriteList[(indexPath as NSIndexPath).row] as NSManagedObject)
+            favoriteList.remove(at: (indexPath as NSIndexPath).row)
             
             do {
                 try managedContext.save()
             } catch let error as NSError  {
                 print("Could not delete \(error), \(error.userInfo)")
             }
-            favoriteTable.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            favoriteTable.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let currentCell = tableView.cellForRowAtIndexPath(indexPath) as! FavoriteCell
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentCell = tableView.cellForRow(at: indexPath) as! FavoriteCell
         symbol = currentCell.symbol.text!
-        self.performSegueWithIdentifier("current", sender: self)
+        self.performSegue(withIdentifier: "current", sender: self)
 
     }
     
@@ -240,11 +242,11 @@ extension ViewController: AutocompleteDelegate {
     func autoCompleteTextField() -> UITextField {
         return self.inputField
     }
-    func autoCompleteThreshold(textField: UITextField) -> Int {
+    func autoCompleteThreshold(_ textField: UITextField) -> Int {
         return 2
     }
     
-    func autoCompleteItemsForSearchTerm(term: String) -> [AutocompletableOption] {
+    func autoCompleteItemsForSearchTerm(_ term: String) -> [AutocompletableOption] {
         var symbolList = Dictionary<String, String>()
         let response = Alamofire.request(.GET, "http:www-scf.usc.edu/~zonghanc/index.php", parameters: ["input": term]).responseJSON()
         if let jsonObj = response.result.value {
@@ -254,18 +256,18 @@ extension ViewController: AutocompleteDelegate {
             }
         }
         
-        let symbolCellList: [AutocompletableOption] = symbolList.map { (let name, let sym) -> AutocompleteCellData in
+        let symbolCellList: [AutocompletableOption] = symbolList.map { (name, sym) -> AutocompleteCellData in
             return AutocompleteCellData(text: name,symbol:sym , image:nil)
             }.map( { $0 as AutocompletableOption })
         return symbolCellList
     }
     
     func autoCompleteHeight() -> CGFloat {
-        return CGRectGetHeight(self.view.frame) / 3.0
+        return self.view.frame.height / 3.0
     }
     
     
-    func didSelectItem(item: AutocompletableOption) {
+    func didSelectItem(_ item: AutocompletableOption) {
         
     }
 }

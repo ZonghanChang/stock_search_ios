@@ -48,30 +48,30 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         }
         
         self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CurrentViewController.back(_:)))
+        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CurrentViewController.back(_:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
         loadData()
         setStar(symbol)
     }
     
-    func setStar(symbol: String) {
+    func setStar(_ symbol: String) {
         
         if indexOfSymbol(symbol) != -1 {
             if let image = UIImage(named: "star_solid"){
-                favoriteIcon.setImage(image, forState: .Normal)
+                favoriteIcon.setImage(image, for: UIControlState())
             }
         }
         else {
             if let image = UIImage(named: "star_outline"){
-                favoriteIcon.setImage(image, forState: .Normal)
+                favoriteIcon.setImage(image, for: UIControlState())
             }
         }
     }
     
-    func indexOfSymbol(symbol: String) -> Int{
+    func indexOfSymbol(_ symbol: String) -> Int{
         for i in 0..<favoriteList.count{
-            let company = favoriteList[i].valueForKey("symbol") as? String
+            let company = favoriteList[i].value(forKey: "symbol") as? String
             if let company = company {
                 if symbol == company {
                     return i
@@ -82,12 +82,12 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     func loadData() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName:"Symbol")
         do {
             let results =
-                try managedContext.executeFetchRequest(fetchRequest)
+                try managedContext.fetch(fetchRequest)
             favoriteList = results as! [NSManagedObject]
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
@@ -95,7 +95,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
 
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         fillTable()
         setChart()
     }
@@ -105,29 +105,28 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         // Dispose of any resources that can be recreated.
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "historical" {
-            let historical: HistoricalViewController = segue.destinationViewController as! HistoricalViewController
+            let historical: HistoricalViewController = segue.destination as! HistoricalViewController
             historical.symbol = symbol
         }
         
         if segue.identifier == "news" {
-            let news: NewsViewController = segue.destinationViewController as! NewsViewController
+            let news: NewsViewController = segue.destination as! NewsViewController
             news.symbol = symbol
         }
 
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("detail", forIndexPath: indexPath) as! DetailCellTableViewCell
-        
-        cell.field?.text = fields[indexPath.row]
-        cell.field.font = UIFont.boldSystemFontOfSize(12)
-        cell.content?.text = content[indexPath.row]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! DetailCellTableViewCell
+        cell.field?.text = fields[(indexPath as NSIndexPath).row]
+        cell.field.font = UIFont.boldSystemFont(ofSize: 12)
+        cell.content?.text = content[(indexPath as NSIndexPath).row]
     
-        cell.content.font = UIFont.systemFontOfSize(12)
-        if indexPath.row == 3 {
+        cell.content.font = UIFont.systemFont(ofSize: 12)
+        if (indexPath as NSIndexPath).row == 3 {
             if json!["ChangePercent"].doubleValue < 0{
                 
                 cell.arrow.image = UIImage(named: "Down")
@@ -136,7 +135,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
                 cell.arrow.image = UIImage(named: "Up")
             }
         }
-        if indexPath.row == 7 {
+        if (indexPath as NSIndexPath).row == 7 {
             if (Double(json!["LastPrice"].stringValue)! - json!["ChangeYTD"].doubleValue) < 0{
                 cell.arrow.image = UIImage(named: "Down")
             }
@@ -147,7 +146,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         return cell
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fields.count
     }
     
@@ -160,12 +159,12 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
             content.append(String(format: "%.2f", json["Change"].doubleValue) + "(" + String(format: "%.2f", json["ChangePercent"].doubleValue) + "%)")
             
             let dateStr = json["Timestamp"].stringValue
-            let formatter = NSDateFormatter()
+            let formatter = DateFormatter()
             formatter.dateFormat = "EEE MMM dd HH:mm:ss ZZZZZZZ yyyy"
-            let defaultTimeZoneStr = formatter.dateFromString(dateStr)
-            formatter.timeZone = NSTimeZone(abbreviation: "UTC-04:00")
+            let defaultTimeZoneStr = formatter.date(from: dateStr)
+            formatter.timeZone = TimeZone(abbreviation: "UTC-04:00")
             formatter.dateFormat = "MMM dd yyyy HH:mm:ss"
-            let utcTimeZoneStr = formatter.stringFromDate(defaultTimeZoneStr!)
+            let utcTimeZoneStr = formatter.string(from: defaultTimeZoneStr!)
             content.append(utcTimeZoneStr)
             
             let marketcap = json["MarketCap"].doubleValue
@@ -191,23 +190,23 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     
     
     func setChart(){
-        if let checkedUrl = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=400&height=300") {
-            imageView.contentMode = .ScaleAspectFit
+        if let checkedUrl = URL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=400&height=300") {
+            imageView.contentMode = .scaleAspectFit
             downloadImage(checkedUrl)
         }
     }
     
     
-    func getDataFromUrl(url:NSURL, completion: ((data: NSData?, response: NSURLResponse?, error: NSError? ) -> Void)) {
-        NSURLSession.sharedSession().dataTaskWithURL(url) { (data, response, error) in
-            completion(data: data, response: response, error: error)
-            }.resume()
+    func getDataFromUrl(_ url:URL, completion: @escaping ((_ data: Data?, _ response: URLResponse?, _ error: NSError? ) -> Void)) {
+        URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
+            completion(data, response, error)
+            }) .resume()
     }
     
-    func downloadImage(url: NSURL){
+    func downloadImage(_ url: URL){
         getDataFromUrl(url) { (data, response, error)  in
-            dispatch_async(dispatch_get_main_queue()) { () -> Void in
-                guard let data = data where error == nil else { return }
+            DispatchQueue.main.async { () -> Void in
+                guard let data = data , error == nil else { return }
                 
                 self.imageView.image = UIImage(data: data)
             }
@@ -215,7 +214,7 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
 
     
-    @IBAction func favorite(sender: AnyObject) {
+    @IBAction func favorite(_ sender: AnyObject) {
         let index = indexOfSymbol(symbol)
         if index == -1 {
             addFavorite(symbol)
@@ -225,11 +224,11 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         }
     }
     
-    func deleteFavorite(index: Int) {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    func deleteFavorite(_ index: Int) {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext: NSManagedObjectContext = appDelegate.managedObjectContext
-        managedContext.deleteObject(favoriteList[index] as NSManagedObject)
-        favoriteList.removeAtIndex(index)
+        managedContext.delete(favoriteList[index] as NSManagedObject)
+        favoriteList.remove(at: index)
         
         do {
             try managedContext.save()
@@ -239,14 +238,14 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         setStar(symbol)
     }
     
-    func addFavorite(symbol: String){
+    func addFavorite(_ symbol: String){
         
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         
-        let entity = NSEntityDescription.entityForName("Symbol", inManagedObjectContext: managedContext)
+        let entity = NSEntityDescription.entity(forEntityName: "Symbol", in: managedContext)
         
-        let favorite = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext)
+        let favorite = NSManagedObject(entity: entity!, insertInto: managedContext)
         favorite.setValue(symbol, forKey: "symbol")
         
         do {
@@ -259,19 +258,19 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
     }
     
     
-    func back(sender: UIBarButtonItem) {
-        self.navigationController?.popToRootViewControllerAnimated(true)
+    func back(_ sender: UIBarButtonItem) {
+        self.navigationController?.popToRootViewController(animated: true)
     }
 
     
-    @IBAction func facebook(sender: AnyObject) {
+    @IBAction func facebook(_ sender: AnyObject) {
         let content : FBSDKShareLinkContent = FBSDKShareLinkContent()
-        content.contentURL = NSURL(string: "http://finance.yahoo.com/q?s=" + self.symbol)
+        content.contentURL = URL(string: "http://finance.yahoo.com/q?s=" + self.symbol)
         content.contentTitle = "Current Stock Price of \(json!["Name"].stringValue) is $\(json!["LastPrice"].stringValue)"
         content.contentDescription = "Stock Information of \(json!["Name"].stringValue) (\(json!["Symbol"].stringValue))"
-        content.imageURL = NSURL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
+        content.imageURL = URL(string: "http://chart.finance.yahoo.com/t?s=\(symbol)&lang=en-US&width=150&height=150")
         
-        FBSDKShareDialog.showFromViewController(self, withContent: content, delegate: self)
+        FBSDKShareDialog.show(from: self, with: content, delegate: self)
         /*
         let dialog:FBSDKShareDialog = FBSDKShareDialog()
         dialog.shareContent = content
@@ -282,27 +281,27 @@ class CurrentViewController: UIViewController, UITableViewDataSource, FBSDKShari
         */
     }
     
-    func sharer(sharer: FBSDKSharing!, didCompleteWithResults results: [NSObject : AnyObject]!) {
-        let alertController = UIAlertController(title: "Posted Successfully", message:"", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+    func sharer(_ sharer: FBSDKSharing!, didCompleteWithResults results: [AnyHashable: Any]!) {
+        let alertController = UIAlertController(title: "Posted Successfully", message:"", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
         
     }
     
-    func sharer(sharer: FBSDKSharing!, didFailWithError error: NSError!) {
+    func sharer(_ sharer: FBSDKSharing!, didFailWithError error: NSError!) {
         
-        let alertController = UIAlertController(title: "Sharing Fail", message:"", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+        let alertController = UIAlertController(title: "Sharing Fail", message:"", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    func sharerDidCancel(sharer: FBSDKSharing!) {
-        let alertController = UIAlertController(title: "Not Posted", message:"", preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default,handler: nil))
+    func sharerDidCancel(_ sharer: FBSDKSharing!) {
+        let alertController = UIAlertController(title: "Not Posted", message:"", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default,handler: nil))
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     
